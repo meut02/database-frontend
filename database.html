@@ -1,0 +1,62 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Database Management Page</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script> <!-- Include Axios -->
+</head>
+<body>
+  <h1>Create Table</h1>
+  <input type="text" id="tableName" placeholder="Table Name">
+  <button onclick="createTable()">Create Table</button>
+
+  <h1>Add Field</h1>
+  <input type="text" id="fieldName" placeholder="Field Name">
+  <input type="text" id="fieldType" placeholder="Field Type">
+  <select id="tableSelect">
+    <!-- Populate this dropdown with existing table names -->
+  </select>
+  <button onclick="addField()">Add Field</button>
+
+  <script>
+    function createTable() {
+      const tableName = document.getElementById('tableName').value;
+      axios.post('http://localhost:3000/Table/create-table', { tableName })
+        .then((response) => {
+          alert(response.data.message);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+
+    function addField() {
+      const tableName = document.getElementById('tableSelect').value;
+      const fieldName = document.getElementById('fieldName').value;
+      const fieldType = document.getElementById('fieldType').value;
+      axios.post('http://localhost:3000/Table/add-field', { tableName, fieldName, fieldType })
+        .then((response) => {
+          alert(response.data.message);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+
+    // Populate the dropdown with existing table names when the page loads
+    axios.get('http://localhost:3000/Table/get-tables') // Create an API route to fetch existing table names
+      .then((response) => {
+        const tableSelect = document.getElementById('tableSelect');
+        response.data.tables.forEach((table) => {
+          const option = document.createElement('option');
+          option.value = table;
+          option.text = table;
+          tableSelect.appendChild(option);
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  </script>
+</body>
+</html>
